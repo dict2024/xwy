@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout android:id="@+id/input_line" android:orientation="horizontal" 
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+        <Spinner android:id="@+id/spinner" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_toLeftOf="@id/search_text"
+            android:layout_alignTop="@id/search_text" />
+	    <EditText android:id="@+id/search_text" android:layout_width="150dp"
+		    android:layout_height="wrap_content" android:layout_toLeftOf="@id/search"
+		    android:layout_alignTop="@id/search" android:text="" />
+	    <Button android:id="@+id/search" android:layout_width="60dp"
+		    android:layout_height="wrap_content" android:layout_toLeftOf="@id/web_search"
+		    android:layout_alignTop="@id/web_search" android:text="查询" />
+        <Button
+            android:id="@+id/web_search"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Web" />
+
+    </LinearLayout>
+
+	<ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/input_line" />
+
+	<ScrollView android:id="@+id/result_scroll" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:scrollbars="vertical"
+		android:fadingEdge="vertical" android:layout_below="@id/list">
+
+		<EditText android:id="@+id/result_text" android:layout_width="fill_parent"
+			android:layout_height="fill_parent" android:textSize="16sp"
+			android:text="" />
+	</ScrollView>
+</RelativeLayout>
