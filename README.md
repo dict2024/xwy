@@ -45,13 +45,13 @@
 
 语法包含了所有语言（俄语、日语、暂缺英语）的语法，支持按关键字模糊查询。
 
-![gam](docs/gammar.jpg)
+![gammar.jpeg](http://g.imgpost.co/2024/04/05/gammar.jpeg)
 
 ## 添加自己的单词
 
 首先打开 dicts 目录下的对应语言的 dict.txt 文件。例如俄语位于 dicts/ra-cn/dict.txt
 
-![gam](docs/adddic.jpg)
+![adddic.jpeg](http://g.imgpost.co/2024/04/05/adddic.jpeg)
 
 然后在文件中添加词汇（词汇相对于原词汇的位置没有要求，程序会自动排序）。第一行是key，后面的行是解释，空行表示结束。
 
@@ -73,13 +73,13 @@
 
 此类文件是一行一题，要求包含空格，空格前为题目，空格后为答案。
 
-![exercise](docs/t1.jpg)
+![t1.jpeg](http://g.imgpost.co/2024/04/05/t1.jpeg)
 
 ## 刷题
 
 此类文件是4行一题，第1行题目，第2行选项，第3行答案，第4行空行。
 
-![exercise](docs/t2.jpg)
+[![t2.jpeg](http://g.imgpost.co/2024/04/05/t2.jpeg)](https://imgpost.co/image/A6ec)
 
 # 重新编译
 
@@ -91,21 +91,21 @@
 
 打开 https://visualstudio.microsoft.com/zh-hans/downloads/ 下载社区版
 
-![ide](docs/ide.jpg)
+![ide.jpeg](http://g.imgpost.co/2024/04/05/ide.jpeg)
 
 选择安装 .Net 桌面和多平台UI
 
-![ide](docs/ide-s.jpg)
+![ide-s.jpeg](http://g.imgpost.co/2024/04/05/ide-s.jpeg)
 
 ## 编译 android版本
 
 打开 Dict_apk_src 工程。 再在工具栏选择“Release”
 
-![ide](docs/release.jpg)
+![release.jpeg](http://g.imgpost.co/2024/04/05/release.jpeg)
 
 然后通过菜单依次点击“清理” -> “生成” -> “存档”
 
-![ide](docs/compile.jpg)
+![w.jpeg](http://g.imgpost.co/2024/04/05/w.jpeg)
 
 再在“存档”里点击“分发”，通道选择“临时”。证书可以临时创建一个。然后选择“另存为”，就能生成 android 用的 apk 文件。
 
