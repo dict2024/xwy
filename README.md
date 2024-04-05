@@ -55,7 +55,13 @@
 
 语法包含了所有语言（俄语、日语、暂缺英语）的语法，支持按关键字模糊查询。
 
+> 俄语语法查询例子
+
 ![gammar.jpeg](http://g.imgpost.co/2024/04/05/gammar.jpeg)
+
+> 日语语法查询例子
+
+![grammar2.jpeg](http://g.imgpost.co/2024/04/05/grammar2.jpeg)
 
 ## 添加自己的单词
 
