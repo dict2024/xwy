@@ -23,11 +23,11 @@
 
 例如：输入“mehR”，会转换为“меня”
 
-![win1](docs/ra1.png)
+![win1](docs/ra1.jpg)
 
 查询时，还支持通过“web”按钮，转到外部网站查询(该网站支持声音)。
 
-![win1](docs/win3.png)
+![win1](docs/win3.jpg)
 
 ## 查日语
 
@@ -35,7 +35,7 @@
 
 使用中文输入法，输入中文汉字会转为日语汉字。
 
-![win1](docs/jp1.png)
+![win1](docs/jp1.jpg)
 
 ## 查英语
 
@@ -45,13 +45,13 @@
 
 语法包含了所有语言（俄语、日语、暂缺英语）的语法，支持按关键字模糊查询。
 
-![gam](docs/gammar.png)
+![gam](docs/gammar.jpg)
 
 ## 添加自己的单词
 
 首先打开 dicts 目录下的对应语言的 dict.txt 文件。例如俄语位于 dicts/ra-cn/dict.txt
 
-![gam](docs/adddic.png)
+![gam](docs/adddic.jpg)
 
 然后在文件中添加词汇（词汇相对于原词汇的位置没有要求，程序会自动排序）。第一行是key，后面的行是解释，空行表示结束。
 
@@ -73,13 +73,13 @@
 
 此类文件是一行一题，要求包含空格，空格前为题目，空格后为答案。
 
-![exercise](docs/t1.png)
+![exercise](docs/t1.jpg)
 
 ## 刷题
 
 此类文件是4行一题，第1行题目，第2行选项，第3行答案，第4行空行。
 
-![exercise](docs/t2.png)
+![exercise](docs/t2.jpg)
 
 # 重新编译
 
@@ -91,21 +91,21 @@
 
 打开 https://visualstudio.microsoft.com/zh-hans/downloads/ 下载社区版
 
-![ide](docs/ide.png)
+![ide](docs/ide.jpg)
 
 选择安装 .Net 桌面和多平台UI
 
-![ide](docs/ide-s.png)
+![ide](docs/ide-s.jpg)
 
 ## 编译 android版本
 
 打开 Dict_apk_src 工程。 再在工具栏选择“Release”
 
-![ide](docs/release.png)
+![ide](docs/release.jpg)
 
 然后通过菜单依次点击“清理” -> “生成” -> “存档”
 
-![ide](docs/compile.png)
+![ide](docs/compile.jpg)
 
 再在“存档”里点击“分发”，通道选择“临时”。证书可以临时创建一个。然后选择“另存为”，就能生成 android 用的 apk 文件。
 
