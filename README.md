@@ -23,11 +23,11 @@
 
 例如：输入“mehR”，会转换为“меня”
 
-![win1](docs/ra1.jpg)
+![ra1.jpeg](http://g.imgpost.co/2024/04/05/ra1.jpeg)
 
 查询时，还支持通过“web”按钮，转到外部网站查询(该网站支持声音)。
 
-![win1](docs/win3.jpg)
+![win3.jpeg](http://g.imgpost.co/2024/04/05/win3.jpeg)
 
 ## 查日语
 
@@ -35,7 +35,7 @@
 
 使用中文输入法，输入中文汉字会转为日语汉字。
 
-![win1](docs/jp1.jpg)
+![jp1.jpeg](http://g.imgpost.co/2024/04/05/jp1.jpeg)
 
 ## 查英语
 
