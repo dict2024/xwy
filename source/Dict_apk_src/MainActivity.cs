@@ -1,6 +1,7 @@
 using Android.Content;
-using Org.W3c.Dom;
+using System.Text;
 using System.Collections;
+using static Android.Renderscripts.ScriptGroup;
 
 namespace Dict
 {
@@ -20,6 +21,7 @@ namespace Dict
             {
                 spinner.Adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem,
                     new string[] { "俄语", "英语", "日汉", "汉日", "语法" });
+                spinner.SetSelection(loadMode());
                 spinner.ItemSelected += Spinner_ItemSelected;
             }
 
@@ -63,16 +65,43 @@ namespace Dict
             }
         }
 
+        private int loadMode()
+        {
+            int index = 0;
+            string cacheFileName = CacheDir.AbsolutePath + "/config.ini";
+            if (File.Exists(cacheFileName))
+            {
+                try
+                {
+                    StreamReader reader = new StreamReader(cacheFileName, Encoding.UTF8);
+                    index = Convert.ToInt32(reader.ReadToEnd());
+                    reader.Close();
+                }
+                catch(Exception exp)
+                {
+
+                }
+            }
+            return index;
+        }
+
+        private void saveMode(int index)
+        {
+            string cacheFileName = CacheDir.AbsolutePath + "/config.ini";
+            StreamWriter writer = new StreamWriter(cacheFileName, false, Encoding.UTF8);
+            writer.Write(index.ToString());
+            writer.Close();
+        }
+
         private void Spinner_ItemSelected(object? sender, AdapterView.ItemSelectedEventArgs e)
         {
             var spinner = FindViewById<Spinner>(Resource.Id.spinner);
             if (spinner !=null && spinner.SelectedItem != null)
             {
                 changeDictionary(spinner.SelectedItem.ToString());
+                saveMode((int)spinner.SelectedItemId);
             }            
         }
-
-
 
         private void WordList_ItemClick(object? sender, AdapterView.ItemClickEventArgs e)
         {
@@ -97,24 +126,24 @@ namespace Dict
         {
             if (dictName == "英语")
             {
-                fileDictionary = new FileDictionary(this.Assets, "en-cn/data", 30);
+                fileDictionary = new FileDictionary(this.Assets, "dicts/en-cn/data", 30);
             }
             else if (dictName == "日汉")
             {
-                fileDictionary = new FileDictionary(this.Assets, "jp-cn/data", 30);
+                fileDictionary = new FileDictionary(this.Assets, "dicts/jp-cn/data", 30);
             }
             else if (dictName == "汉日")
             {
-                fileDictionary = new FileDictionary(this.Assets, "cn-jp/data", 30);
+                fileDictionary = new FileDictionary(this.Assets, "dicts/cn-jp/data", 30);
             }
             else if (dictName == "语法")
             {
-                fileDictionary = new FileDictionary(this.Assets, "grammar/data", 30);
+                fileDictionary = new FileDictionary(this.Assets, "dicts/grammar/data", 30);
             }
             else
             {
                 //俄语
-                fileDictionary = new FileDictionary(this.Assets, "ra-cn/data", 30);
+                fileDictionary = new FileDictionary(this.Assets, "dicts/ra-cn/data", 30);
             }            
             currentType = dictName;
         }
