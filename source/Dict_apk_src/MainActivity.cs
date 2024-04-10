@@ -1,35 +1,130 @@
 using Android.Content;
 using System.Text;
 using System.Collections;
-using static Android.Renderscripts.ScriptGroup;
+using Android.Content.Res;
+using Android.Graphics;
 
 namespace Dict
 {
-    [Activity(Label = "Dict", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "俄日英汉", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity
     {
+        int currentMode = 0;
+
+        //字典模式
         FileDictionary fileDictionary = null;
         string currentType = "";
+        EditText searchText;
+		EditText dictResultText;
+		ListView wordList;
+		Spinner  dictSpinner;
+
+        //测试模式
+        int currentPlace = 0;
+        int currentLevel = 0;
+        string currentClassFolder = "";
+        string currentClassName = "";
+        DictionaryFinder finder = null;
+        Lesson CurrentLesson = new Lesson();
+        ArrayList FilterLesson = new ArrayList();
+        TextView labQuestion;
+        EditText execResultText;
+        Spinner levelSpinner;
+        Spinner lessonSpinner;
+        TextView labMessage;
+        CheckBox chkTestMode;
+        RadioButton[] radSelect = new RadioButton[4];
+		
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_main);
+            InitializeComponent();
+            TabHost1_Click(null, null);
+        }
 
-            var spinner = FindViewById<Spinner>(Resource.Id.spinner);
-            if (spinner != null)
+       private void InitializeComponent()
+       {
+            // 模式选择
+            var tabHost1 = FindViewById<TitleButton>(Resource.Id.tabHost1);
+            if (tabHost1 != null)
             {
-                spinner.Adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem,
+                tabHost1.Click += TabHost1_Click;
+            }
+
+            // 测试模式
+            chkTestMode = FindViewById<CheckBox>(Resource.Id.test_mode);
+
+            labQuestion = FindViewById<TextView>(Resource.Id.question);
+            if (labQuestion != null)
+            {
+                labQuestion.SetTextColor(Color.Black);
+            }
+            execResultText = FindViewById<EditText>(Resource.Id.exec_text);
+            labMessage = FindViewById<TextView>(Resource.Id.word_count);           
+
+            lessonSpinner = FindViewById<Spinner>(Resource.Id.lesson_spinner);
+            if (lessonSpinner != null)
+            {
+                String[] allLesson = LoadAllLesson();
+                lessonSpinner.Adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem, allLesson);
+                lessonSpinner.ItemSelected += lstClassName_SelectedIndexChanged;
+                lessonSpinner.SetSelection(loadLessonIndex());
+            }
+
+            levelSpinner = FindViewById<Spinner>(Resource.Id.level_spinner);
+            if (levelSpinner != null)
+            {
+                levelSpinner.Adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem,
+                    new string[] { "0", "1", "2", "3", "4", "5"});
+                levelSpinner.ItemSelected += levelBar_SelectedIndexChanged;
+            }
+
+            var beforeButton = FindViewById<Button>(Resource.Id.before);
+            if (beforeButton != null)
+            {
+                beforeButton.Click += btnPrew_Click;
+            }
+
+            var nextButton = FindViewById<Button>(Resource.Id.next);
+            if (nextButton != null)
+            {
+                nextButton.Click += btnNext_Click;
+            }
+
+            var answerButton = FindViewById<Button>(Resource.Id.show_answer);
+            if (answerButton != null)
+            {
+                answerButton.Click += btnResult_Click;
+            }
+
+            var webButton = FindViewById<Button>(Resource.Id.web);
+            if (webButton != null)
+            {
+                webButton.Click += ExerciseWeb_Click;
+            }
+            radSelect[0] = FindViewById<RadioButton>(Resource.Id.option_1);
+            radSelect[1] = FindViewById<RadioButton>(Resource.Id.option_2);
+            radSelect[2] = FindViewById<RadioButton>(Resource.Id.option_3);
+            radSelect[3] = FindViewById<RadioButton>(Resource.Id.option_4);
+
+            // 字典模式
+			searchText = FindViewById<EditText>(Resource.Id.search_text);
+            dictSpinner = FindViewById<Spinner>(Resource.Id.spinner);
+            if (dictSpinner != null)
+            {
+                dictSpinner.Adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem,
                     new string[] { "俄语", "英语", "日汉", "汉日", "语法" });
-                spinner.SetSelection(loadMode());
-                spinner.ItemSelected += Spinner_ItemSelected;
+                dictSpinner.SetSelection(loadMode());
+                dictSpinner.ItemSelected += Spinner_ItemSelected;
             }
 
             var search = FindViewById<Button>(Resource.Id.search);
             if (search != null)
             {
                 search.Click += Search_Click;
-            }            
+            }
 
             var websearch = FindViewById<Button>(Resource.Id.web_search);
             if (websearch != null)
@@ -37,10 +132,10 @@ namespace Dict
                 websearch.Click += Websearch_Click;
             }
 
-            var result = FindViewById<EditText>(Resource.Id.result_text);
+            dictResultText = FindViewById<EditText>(Resource.Id.result_text);
             try
             {
-                var wordList = FindViewById<ListView>(Resource.Id.list);
+                wordList = FindViewById<ListView>(Resource.Id.list);
                 if (wordList != null)
                 {
                     var items = new string[] {
@@ -54,10 +149,10 @@ namespace Dict
                     wordList.ChoiceMode = Android.Widget.ChoiceMode.Single;
                     wordList.ItemClick += WordList_ItemClick;
                 }
-            } 
+            }
             catch (Exception ex)
-            {                
-                result.Text = ex.Message;
+            {
+                dictResultText.Text = ex.Message;
             }
             if (fileDictionary == null)
             {
@@ -65,10 +160,66 @@ namespace Dict
             }
         }
 
+        private void TabHost1_Click(object? sender, EventArgs e)
+        {
+            var tabHost1 = FindViewById<TitleButton>(Resource.Id.tabHost1);
+            this.currentMode = tabHost1.mode;
+
+            var dictLine = FindViewById<LinearLayout>(Resource.Id.input_line2);
+            var dictList = FindViewById<ListView>(Resource.Id.list);
+            var dictScroll = FindViewById<ScrollView>(Resource.Id.result_scroll);
+            var execLine = FindViewById<LinearLayout>(Resource.Id.input_line);
+            var execLessonLine = FindViewById<LinearLayout>(Resource.Id.lesson_line);
+            var execQuestion = FindViewById<TextView>(Resource.Id.question);
+            var execOptions = FindViewById<RadioGroup>(Resource.Id.user_options);
+            var execScroll = FindViewById<ScrollView>(Resource.Id.exec_scroll); 
+
+            if (this.currentMode == 0)
+            {
+                dictLine.Visibility = Android.Views.ViewStates.Visible;
+                dictList.Visibility = Android.Views.ViewStates.Visible;
+                dictScroll.Visibility = Android.Views.ViewStates.Visible;
+                execLine.Visibility = Android.Views.ViewStates.Gone;
+                execLessonLine.Visibility = Android.Views.ViewStates.Gone;
+                execQuestion.Visibility = Android.Views.ViewStates.Gone;
+                execScroll.Visibility = Android.Views.ViewStates.Gone;
+                execOptions.Visibility = Android.Views.ViewStates.Gone;
+            }
+            else
+            {
+                dictLine.Visibility = Android.Views.ViewStates.Gone;
+                dictList.Visibility = Android.Views.ViewStates.Gone;
+                dictScroll.Visibility = Android.Views.ViewStates.Gone;
+                execLine.Visibility = Android.Views.ViewStates.Visible;
+                execLessonLine.Visibility = Android.Views.ViewStates.Visible;
+                execQuestion.Visibility = Android.Views.ViewStates.Visible;
+                execScroll.Visibility = Android.Views.ViewStates.Visible;
+                execOptions.Visibility = Android.Views.ViewStates.Visible;
+            }
+        }
+
+        private String[] LoadAllLesson()
+        {
+            AssetManager assets = this.Assets;
+            String[] lessonFolders = assets.List("exercises");
+            ArrayList lessonList = new ArrayList();
+            foreach (string lessonFolder in lessonFolders)
+            {
+                String[] lessons = assets.List("exercises/" + lessonFolder);
+                foreach (string lesson in lessons)
+                {
+                    string lessonFileName = lessonFolder + "/" + lesson;
+                    lessonList.Add(lessonFileName.Substring(0, lessonFileName.Length - 4));
+                }
+            }
+            return (String[])lessonList.ToArray(typeof(string));
+        }
+
+
         private int loadMode()
         {
             int index = 0;
-            string cacheFileName = CacheDir.AbsolutePath + "/config.ini";
+            string cacheFileName = CacheDir.AbsolutePath + "/dict_config.ini";
             if (File.Exists(cacheFileName))
             {
                 try
@@ -77,7 +228,7 @@ namespace Dict
                     index = Convert.ToInt32(reader.ReadToEnd());
                     reader.Close();
                 }
-                catch(Exception exp)
+                catch (Exception exp)
                 {
 
                 }
@@ -87,29 +238,606 @@ namespace Dict
 
         private void saveMode(int index)
         {
-            string cacheFileName = CacheDir.AbsolutePath + "/config.ini";
+            string cacheFileName = CacheDir.AbsolutePath + "/dict_config.ini";
+            StreamWriter writer = new StreamWriter(cacheFileName, false, Encoding.UTF8);
+            writer.Write(index.ToString());
+            writer.Close();
+        }
+        private int loadLessonIndex()
+        {
+            int index = 0;
+            string cacheFileName = CacheDir.AbsolutePath + "/exec_config.ini";
+            if (File.Exists(cacheFileName))
+            {
+                try
+                {
+                    StreamReader reader = new StreamReader(cacheFileName, Encoding.UTF8);
+                    index = Convert.ToInt32(reader.ReadToEnd());
+                    reader.Close();
+                }
+                catch (Exception exp)
+                {
+
+                }
+            }
+            return index;
+        }
+
+        private void saveLessonIndex(int index)
+        {
+            string cacheFileName = CacheDir.AbsolutePath + "/exec_config.ini";
             StreamWriter writer = new StreamWriter(cacheFileName, false, Encoding.UTF8);
             writer.Write(index.ToString());
             writer.Close();
         }
 
+        private string getExercisePath()
+        {
+            return "exercises/";
+        }
+
+        private string getRecordPath()
+        {
+            return CacheDir.AbsolutePath + "/records/";
+        }
+
+        private void levelBar_SelectedIndexChanged(object? sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            this.Filter(Convert.ToInt32(this.levelSpinner.SelectedItem.ToString()));
+        }
+
+        private void btnPrew_Click(object? sender, EventArgs e)
+        {
+            if (this.chkTestMode.Checked)
+            {
+                this.UpdateWordLevel();
+            }
+            this.SetWord(this.GetPrewWord());
+            SetCurrentPlaceMessage();
+        }
+
+
+        public void btnNext_Click(object? sender, EventArgs e)
+        {
+            if (!this.chkTestMode.Checked)
+            {
+                showNextWord();
+            }
+            else
+            {
+                this.btnResult_Click(null, null);
+                new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+                {
+                    Thread.Sleep(2000);
+                    RunOnUiThread(() =>
+                    {
+                        showNextWord();
+                    });
+                })).Start();
+            }
+        }
+
+
+        private bool isEndWith(string text)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                String keyword = radSelect[i].Text.Trim();
+                if (!keyword.EndsWith(text))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private bool isEndWith(string text, int length)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                String keyword = radSelect[i].Text.Trim();
+                if (!keyword.EndsWith(text))
+                {
+                    return false;
+                }
+                if (keyword.Length < length)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private int getChangeType()
+        {
+            int wordType = 0;
+            if (isEndWith("だ") || isEndWith("た") || isEndWith("て") || isEndWith("で"))
+            {
+                wordType = 1;
+            }
+            else if (isEndWith("く"))
+            {
+                //形容词
+                wordType = 2;
+            }
+            else if (isEndWith("ない"))
+            {
+                //否定
+                wordType = 3;
+            }
+            else if (isEndWith("に", 4))
+            {
+                wordType = 4;
+            }
+            return wordType;
+        }
+
+        string changeWordByType(string keyword, int wordType)
+        {
+            if (wordType == 1)
+            {
+                if (keyword.Length > 3)
+                {
+                    keyword = keyword.Substring(0, keyword.Length - 1);
+                    if (keyword.EndsWith("っ"))
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 1) + "う";
+                    }
+                    else if (keyword.EndsWith("い"))
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 1) + "く";
+                    }
+                    else if (keyword.EndsWith("ん"))
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 1) + "む";
+                    }
+                    else
+                    {
+                        keyword += "る";
+                    }
+                }
+            }
+            else if (wordType == 2)
+            {
+                keyword = keyword.Substring(0, keyword.Length - 1) + "い";
+            }
+            else if (wordType == 3)
+            {
+                //否定变化
+                if (keyword.Length > 2)
+                {
+                    char c = keyword[keyword.Length - 3];
+                    if (c == 'わ')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "う";
+                    }
+                    else if (c == 'ら')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "る";
+                    }
+                    else if (c == 'ま')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "む";
+                    }
+                    else if (c == 'は')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "ふ";
+                    }
+                    else if (c == 'な')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "ぬ";
+                    }
+                    else if (c == 'さ')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "す";
+                    }
+                    else if (c == 'か')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "く";
+                    }
+                    else if (c == 'あ')
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 3) + "う";
+                    }
+                    else
+                    {
+                        keyword = keyword.Substring(0, keyword.Length - 2);
+                    }
+                }
+            }
+            else if (wordType == 4)
+            {
+                keyword = keyword.Substring(0, keyword.Length - 1);
+            }
+            return keyword;
+        }
+
+        public void btnResult_Click(object? sender, EventArgs e)
+        {
+            int correctId = GetCorrectID();
+            if (correctId != -1)
+            {
+                radSelect[correctId].SetTextColor(Color.Red);
+            }
+            try
+            {
+                StringBuilder buffer = new StringBuilder();
+                int wordType = getChangeType();
+
+                //根据不同的后缀查单词
+                for (int i = 0; i < 4; i++)
+                {
+                    String keyword = radSelect[i].Text.Trim();
+
+                    String str;
+                    if (CurrentLesson.lessonType == 1)
+                    {
+                        //查外部字典
+                        if (currentClassFolder.StartsWith("jp"))
+                        {
+                            keyword = changeWordByType(keyword, wordType);
+                            str = finder.GetDictData(keyword).Replace("\r\n", " ").Replace("】", "】 ");
+                        }
+                        else
+                        {
+                            str = finder.GetDictData(keyword).Replace("\r\n", " ").Replace("】", "】 ");
+                        }
+                    }
+                    else
+                    {
+                        //查本地字典
+                        string localResult = (string)CurrentLesson.localDictionary[keyword];
+                        str = keyword + " " + localResult;
+                        if (i == correctId)
+                        {
+                            string question = GetCurrentWord().Question;
+                            string dictStr = finder.GetDictData(question).Replace("\r\n", " ").Replace("】", "】 ");
+                            if (dictStr.StartsWith(keyword))
+                            {
+                                dictStr = dictStr.Substring(keyword.Length, dictStr.Length - keyword.Length).Trim();
+                            }
+                            if (dictStr.StartsWith(localResult))
+                            {
+                                dictStr = dictStr.Substring(localResult.Length, dictStr.Length - localResult.Length).Trim();
+                            }
+                            str = str + " " + dictStr;
+                        }
+                    }
+
+                    if (str.Length > 65)
+                    {
+                        str = str.Substring(0, 60) + "...";
+                    }
+                    buffer.Append(str + "\r\n");
+                }
+                this.execResultText.Text = buffer.ToString();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void showNextWord()
+        {
+            if (this.chkTestMode.Checked)
+            {
+                this.UpdateWordLevel();
+            }
+            this.SetWord(this.GetNextWord());
+            SetCurrentPlaceMessage();
+        }
+
+        private int GetSelectID()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (radSelect[i].Checked)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private int GetCorrectID()
+        {
+            Exercise currentWord = this.GetCurrentWord();
+            if (currentWord != null)
+            {
+                int index = currentWord.Result - 1;
+                if (index < 0 || index > 3)
+                    index = -1;
+                return index;
+            }
+            return -1;
+        }
+
+        private void SetNormalColor()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                radSelect[i].SetTextColor(Color.Black);
+            }
+        }
+
+        private void radio_Click(object? sender, EventArgs e)
+        {
+            this.SetWord(this.GetCurrentWord());
+        }
+
+        private void lstClassName_SelectedIndexChanged(object? sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            try
+            {
+                if (currentClassName != "")
+                    SaveWordLevel();
+
+                saveLessonIndex((int)lessonSpinner.SelectedItemId);
+                string lessonName = lessonSpinner.SelectedItem.ToString();
+
+                string[] array = lessonName.Split(new char[] { '/' });
+                currentClassFolder = array[0];
+                currentClassName = array[1];
+                if (currentClassFolder.StartsWith("jp"))
+                {
+                    finder = new DictionaryFinder(this.Assets, "dicts/jp-cn/data", 50);
+                }
+                else if (currentClassFolder.StartsWith("ra"))
+                {
+                    finder = new DictionaryFinder(this.Assets, "dicts/ra-cn/data", 50);
+                }
+                else
+                {
+                    finder = new DictionaryFinder(this.Assets, "dicts/en-cn/data", 50);
+                }
+                LoadLesson();
+                SetWord(GetCurrentWord());
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine(exp.Message);
+            }
+        }
+
+        private void LoadLesson()
+        {
+            string lessonFileName = getExercisePath() +
+                currentClassFolder + "/" + currentClassName + ".txt";
+            
+
+            string levelFileName = getRecordPath() +
+                currentClassFolder + "/" + currentClassName + ".level";
+
+            Lesson lesson = Lesson.GetLesson(this.Assets.Open(lessonFileName), levelFileName);
+            if (lesson == null)
+            {
+                return;
+            }
+            this.CurrentLesson = lesson;
+
+            this.FilterLesson.Clear();
+
+            foreach (Exercise item in lesson.exerciseList)
+            {
+                this.FilterLesson.Add(item);
+            }
+            
+            this.currentPlace = 0;
+            this.currentLevel = 0;
+            SetCurrentPlaceMessage();
+            this.radSelect[0].Checked = true;
+			levelSpinner.SetSelection(0);
+        }
+
+
+
+        private void SaveWordLevel()
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(getRecordPath() + currentClassFolder);
+            if (!dirInfo.Exists)
+                dirInfo.Create();
+
+            string fileName = getRecordPath() +
+                currentClassFolder + "\\" + currentClassName + ".level";
+            StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8);
+            Exercise word = null;
+            for (int i = 0; i < CurrentLesson.exerciseList.Count; i++)
+            {
+                word = (Exercise)(CurrentLesson.exerciseList[i]);
+                writer.WriteLine(word.Level);
+            }
+            writer.Close();
+
+        }
+
+        private void Filter(int Level)
+        {
+            this.FilterLesson.Clear();
+            foreach (Exercise word in this.CurrentLesson.exerciseList)
+            {
+                if (word.Level >= Level)
+                {
+                    this.FilterLesson.Add(word);
+                }
+            }
+            this.currentPlace = 0;
+            SetCurrentPlaceMessage();
+            if (FilterLesson.Count != 0)
+            {
+                this.SetWord(this.GetCurrentWord());
+            }
+            else
+            {
+                labQuestion.Text = "该课程学习结束，请选择其他课程";
+                execResultText.Text = "该课程学习结束，请选择其他课程";
+                SetWord(null);
+            }
+        }
+
+
+        private Exercise GetCurrentWord()
+        {
+            if (this.FilterLesson.Count == 0)
+            {
+                return null;
+            }
+            try
+            {
+                return (Exercise)this.FilterLesson[this.currentPlace];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private Exercise GetNextWord()
+        {
+            if (this.FilterLesson.Count == 0)
+            {
+                return null;
+            }
+            this.currentPlace++;
+            if (this.currentPlace >= this.FilterLesson.Count)
+            {
+                if (this.chkTestMode.Checked) 
+                { 
+                    if (this.currentLevel < 5)
+                    {
+                        currentLevel++;
+                        levelSpinner.SetSelection(currentLevel);
+                    }
+                }
+                this.currentPlace = 0;
+            }
+            if (this.currentPlace % 20 == 0)
+                if (this.chkTestMode.Checked)
+                    SaveWordLevel();
+            try
+            {
+                return (Exercise)this.FilterLesson[this.currentPlace];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private Exercise GetPrewWord()
+        {
+            if (this.FilterLesson.Count == 0)
+            {
+                return null;
+            }
+            this.currentPlace--;
+            if (this.currentPlace < 0)
+            {
+                this.currentPlace = this.FilterLesson.Count - 1;
+            }
+            try
+            {
+                return (Exercise)this.FilterLesson[this.currentPlace];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private void SetCurrentPlaceMessage()
+        {
+            
+            if (labMessage == null)
+            {
+                return;
+            }
+
+            if (FilterLesson.Count > 0)
+            {
+                labMessage.Text = (currentPlace + 1) + "/" + FilterLesson.Count;
+            }
+            else
+            {
+                labMessage.Text = "0/0";
+            }
+        }
+
+        private void SetWord(Exercise word)
+        {
+            SetNormalColor();
+            if (word != null)
+            {               
+                this.labQuestion.Text = word.Question;
+                for (int i = 0; i < 4; i++)
+                {
+                    radSelect[i].Text = word.Answers[i];
+                }
+                this.execResultText.Text = "";                             
+            }
+            else
+            {
+                this.labQuestion.Text = "";
+                this.execResultText.Text = "";
+                for (int i = 0; i < 4; i++)
+                {
+                    radSelect[i].Text = "";
+                }
+            }
+        }
+
+        private void UpdateWordLevel()
+        {
+            Exercise currentWord = this.GetCurrentWord();
+            if (currentWord != null)
+            {
+                int correctID = GetCorrectID();
+                if (correctID != -1)
+                {
+                    if (correctID != GetSelectID())
+                    {
+                        currentWord.Level++;
+                    }
+                }
+            }
+        }
+
+	    private void ExerciseWeb_Click(object? sender, EventArgs e)
+        {
+            Exercise currentWord = this.GetCurrentWord();
+            if (CurrentLesson.lessonType == 0 && currentWord != null)
+            {
+                string weburi = getWebUri(currentWord.Question);
+                Intent intent = new Intent();
+                intent.SetAction(Intent.ActionView);
+                intent.SetData(Android.Net.Uri.Parse(weburi));
+                StartActivity(intent);
+            }
+        }
+
+        private void Websearch_Click(object? sender, EventArgs e)
+        {
+            string inputText = change(searchText.Text);
+            string weburi = getWebUri(inputText);
+
+            Intent intent = new Intent();
+            intent.SetAction(Intent.ActionView);
+            intent.SetData(Android.Net.Uri.Parse(weburi));
+            StartActivity(intent);
+        }
+
         private void Spinner_ItemSelected(object? sender, AdapterView.ItemSelectedEventArgs e)
         {
-            var spinner = FindViewById<Spinner>(Resource.Id.spinner);
-            if (spinner !=null && spinner.SelectedItem != null)
+            if (dictSpinner !=null && dictSpinner.SelectedItem != null)
             {
-                changeDictionary(spinner.SelectedItem.ToString());
-                saveMode((int)spinner.SelectedItemId);
+                changeDictionary(dictSpinner.SelectedItem.ToString());
+                saveMode((int)dictSpinner.SelectedItemId);
             }            
         }
 
         private void WordList_ItemClick(object? sender, AdapterView.ItemClickEventArgs e)
         {
             if (resultList != null && resultList.Count > e.Position)
-            {
-                var input = FindViewById<EditText>(Resource.Id.search_text);
-                var result = FindViewById<EditText>(Resource.Id.result_text);
-
+            {                
                 KeyNode selectNode = (KeyNode)resultList[e.Position];                
                 string nextKeyword = selectNode.key;
                 int find = selectNode.key.IndexOf("【");
@@ -117,8 +845,8 @@ namespace Dict
                 {
                     nextKeyword = selectNode.key.Substring(0, find);
                 }
-                input.Text = nextKeyword;
-                result.Text = fileDictionary.getData(selectNode);
+                searchText.Text = nextKeyword;
+                dictResultText.Text = fileDictionary.getData(selectNode);
             }
         }
 
@@ -148,52 +876,37 @@ namespace Dict
             currentType = dictName;
         }
 
-        private void Websearch_Click(object? sender, EventArgs e)
-        {
-            var input = FindViewById<EditText>(Resource.Id.search_text);
-            string inputText = change(input.Text);
 
-            string weburi = getWebUri(inputText);
-
-            Intent intent = new Intent();
-            intent.SetAction(Intent.ActionView);
-            intent.SetData(Android.Net.Uri.Parse(weburi));
-            StartActivity(intent);
-        }
 		
         ArrayList resultList;
         private void Search_Click(object? sender, EventArgs e)
         {
-            var input = FindViewById<EditText>(Resource.Id.search_text);
-            var result = FindViewById<EditText>(Resource.Id.result_text);
-            var wordList = FindViewById<ListView>(Resource.Id.list);
-
-            string searchText;
+            string tempStr;
 			if (currentType == "语法")
 			{
-				// 使用输入的查一下
-				searchText = input.Text.Trim();
-				resultList = fileDictionary.getFuzzLikeData(searchText);
+                // 使用输入的查一下
+                tempStr = searchText.Text.Trim();
+				resultList = fileDictionary.getFuzzLikeData(tempStr);
 				if (resultList.Count == 0)
 				{
-					// 使用俄语变化的查一下
-					searchText = toRussia(input.Text).Trim();
-					resultList = fileDictionary.getFuzzLikeData(searchText);
+                    // 使用俄语变化的查一下
+                    tempStr = toRussia(searchText.Text).Trim();
+					resultList = fileDictionary.getFuzzLikeData(tempStr);
 					if (resultList.Count == 0)
 					{
-						// 使用日语变化的查一下
-						searchText = toJapanese(input.Text).Trim();
-						resultList = fileDictionary.getFuzzLikeData(searchText);
+                        // 使用日语变化的查一下
+                        tempStr = toJapanese(searchText.Text).Trim();
+						resultList = fileDictionary.getFuzzLikeData(tempStr);
 					}
 				}
 			} 
 			else
 			{
-				//非语法，转换完查一次
-				searchText = change(input.Text);
-				resultList = fileDictionary.getStartLikeData(searchText);
+                //非语法，转换完查一次
+                tempStr = change(searchText.Text);
+				resultList = fileDictionary.getStartLikeData(tempStr);
 			}
-			input.Text = searchText;            
+			searchText.Text = tempStr;            
 
             if (resultList.Count > 0)
             {
@@ -224,7 +937,7 @@ namespace Dict
 
                 wordList.SetItemChecked(selectIndex, true);
                 KeyNode selectNode = (KeyNode)resultList[selectIndex];
-                result.Text = fileDictionary.getData(selectNode);
+                dictResultText.Text = fileDictionary.getData(selectNode);
             }
             else
             {
@@ -232,7 +945,7 @@ namespace Dict
                 var items = (string[])temp.ToArray(typeof(string));
                 var listAdapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleListItemChecked, items);
                 wordList.Adapter = listAdapter;
-                result.Text = "";
+                dictResultText.Text = "";
             }
         }
 
@@ -290,7 +1003,7 @@ namespace Dict
         {
             string target = "https://translate.yandex.com/?source_lang=en&target_lang=zh&text=";
 
-            if (currentType == "俄语")
+            if (currentMode == 0 && currentType == "俄语")
             {
                 target = "https://translate.yandex.com/?source_lang=ru&target_lang=zh&text=";
                 if (!(isRussia(input)))
@@ -298,7 +1011,7 @@ namespace Dict
                     target = "https://translate.yandex.com/?source_lang=zh&target_lang=ru&text=";
                 }
             }
-            else if (currentType == "英语")
+            else if (currentMode == 0 && currentType == "英语")
             {
                 target = "https://translate.yandex.com/?source_lang=en&target_lang=zh&text=";
                 if (!(isEnglish(input)))
@@ -306,13 +1019,25 @@ namespace Dict
                     target = "https://translate.yandex.com/?source_lang=zh&target_lang=en&text=";
                 }
             }
-            else if (currentType == "日汉")
+            else if (currentMode == 0 && currentType == "日汉")
             {
                 target = "https://translate.yandex.com/?source_lang=ja&target_lang=zh&text=";
             }
-            else if (currentType == "汉日")
+            else if (currentMode == 0 && currentType == "汉日")
             {
                 target = "https://translate.yandex.com/?source_lang=zh&target_lang=ja&text=";
+            }
+            else if (currentMode == 1 && currentClassFolder.StartsWith("ra"))
+            {
+                target = "https://translate.yandex.com/?source_lang=ru&target_lang=zh&text=";
+            }
+            else if (currentMode == 1 && currentClassFolder.StartsWith("jp"))
+            {
+                target = "https://translate.yandex.com/?source_lang=ja&target_lang=zh&text=";
+            }
+            else if (currentMode == 1 && currentClassFolder.StartsWith("en"))
+            {
+                target = "https://translate.yandex.com/?source_lang=en&target_lang=zh&text=";
             }
 
             return target + input;

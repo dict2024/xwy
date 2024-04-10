@@ -150,9 +150,8 @@
 | 工程 | 说明 |
 | ---- | ---- |
 | Dict_windows_src | window版词典源码 |
-| Dict_apk_src | android版词典源码 |
 | Exercises_windows_src | window版单词记忆和练习源码 |
-| Exercises_apk_src（待补充） | android版单词记忆和练习源码 |
+| Dict_apk_src | android版词典和练习二合一源码 |
 | FileToData_src | window版词库生成工具源码 |
 | MergeData_src | window版词词库合并工具源码 |
 
