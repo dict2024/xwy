@@ -77,7 +77,13 @@
 
 通过事先收录的2类题库，自动给出选择题让你做题。
 
+window版本
+
 ![exercises.jpeg](http://g.imgpost.co/2024/04/05/exercises.jpeg)
+
+android版本
+
+![dict2.jpeg](http://g.imgpost.co/2024/04/10/dict2.jpeg)
 
 分为“学习模式”和“测试模式”：
 
@@ -101,13 +107,8 @@
 
 此类文件是一行一题，要求包含空格，空格前为题目，空格后为答案。
 
-window版本
-
 ![t1.jpeg](http://g.imgpost.co/2024/04/05/t1.jpeg)
 
-android版本
-
-![dict2.jpeg](http://g.imgpost.co/2024/04/10/dict2.jpeg)
 
 ## 题型2：刷题
 
