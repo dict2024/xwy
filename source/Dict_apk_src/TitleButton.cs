@@ -32,16 +32,16 @@ namespace Dict
             };
             if (mode == 0)
             {
-                canvas.DrawRoundRect(0, -40, 500, 60, 60, 60, blackPaint);
-                canvas.DrawRoundRect(500, -40, 1000, 60, 60, 60, grayPaint);
-                canvas.DrawText("查字典", 180, 40, whiteTextPaint);
-                canvas.DrawText("做练习", 680, 40, whiteTextPaint);
+                canvas.DrawRoundRect(0, -40, Width/2, 60, 60, 60, blackPaint);
+                canvas.DrawRoundRect(Width / 2, -40, Width , 60, 60, 60, grayPaint);
+                canvas.DrawText("查字典", Width / 4 - 60, 40, whiteTextPaint);
+                canvas.DrawText("做练习", Width - Width / 4 - 60, 40, whiteTextPaint);
             } else
             {
-                canvas.DrawRoundRect(0, -40, 500, 60, 60, 60, grayPaint);
-                canvas.DrawRoundRect(500, -40, 1000, 60, 60, 60, blackPaint);
-                canvas.DrawText("查字典", 180, 40, whiteTextPaint);
-                canvas.DrawText("做练习", 680, 40, whiteTextPaint);
+                canvas.DrawRoundRect(0, -40, Width / 2, 60, 60, 60, grayPaint);
+                canvas.DrawRoundRect(Width / 2, -40, Width, 60, 60, 60, blackPaint);
+                canvas.DrawText("查字典", Width / 4 - 60, 40, whiteTextPaint);
+                canvas.DrawText("做练习", Width - Width / 4 - 60, 40, whiteTextPaint);
             }
 
             base.OnDraw(canvas);
@@ -51,7 +51,7 @@ namespace Dict
 
         public override bool OnTouchEvent(MotionEvent? e)
         {
-            if (e.GetX() < 500)
+            if (e.GetX() < Width / 2)
             {
                 mode = 0;
             }

@@ -1,5 +1,5 @@
 # xwy（学外语）
-本软件是整理基于互联网及github收集到的外语词汇而得的字典（英语、日语、俄语），再利用字典制作的单词记忆和刷题软件。能帮你记单词、学语法、查字典，还能使用web来读单词。
+本软件是整理基于互联网及github收集到的外语词汇而得的字典（英语、日语、俄语），再利用字典制作的单词记忆和刷题软件。能帮你记单词、学语法、查字典，还能使用web来读单词。支持android和window两种版本。
 
 [下载地址](https://github.com/dict2024/xwy/archive/refs/heads/main.zip)
 
@@ -27,9 +27,9 @@
 
 ![ra1.jpeg](http://g.imgpost.co/2024/04/05/ra1.jpeg)
 
-输入“derLi”，会转换为“белый” （android版样例）
+输入“tyt”，会转换为“тут” （android版样例）
 
-![ra2.jpeg](http://g.imgpost.co/2024/04/05/ra2.jpeg)
+![dict1.jpeg](http://g.imgpost.co/2024/04/10/dict1.jpeg)
 
 查询时，还支持通过“web”按钮，转到外部网站查询(该网站支持声音)。
 
@@ -101,7 +101,13 @@
 
 此类文件是一行一题，要求包含空格，空格前为题目，空格后为答案。
 
+window版本
+
 ![t1.jpeg](http://g.imgpost.co/2024/04/05/t1.jpeg)
+
+android版本
+
+![dict2.jpeg](http://g.imgpost.co/2024/04/10/dict2.jpeg)
 
 ## 题型2：刷题
 
