@@ -10,8 +10,6 @@ namespace Exercises
         public ArrayList exerciseList = new ArrayList();
         public int lessonType = 0; //0:自动生成  1:课程里有4个选项
         public Hashtable localDictionary = new Hashtable();
-        private string lessonFileName = "";
-        private string levelFileName = "";
 
         static Random exerciseRan = new Random();
         public static Lesson GetLesson(string lessonFileName, string levelFileName)
@@ -22,8 +20,6 @@ namespace Exercises
             }
 
             Lesson lesson = new Lesson();
-            lesson.lessonFileName = lessonFileName;
-            lesson.levelFileName = levelFileName;
 
             exerciseRan = new Random(System.DateTime.Now.Millisecond);
 
@@ -115,6 +111,16 @@ namespace Exercises
                             {
                                 continue;
                             }
+                            //取出注音作为扩展
+                            string addtion = "";
+                            int pfind = input.LastIndexOf("#");
+                            if (pfind != -1)
+                            {
+                                addtion = input.Substring(pfind + 1, input.Length - pfind - 1);
+                                input = input.Substring(0, pfind).Trim();
+                            }
+
+                            //取出答案
                             input = input.Replace("\t", " ");
                             int find = input.LastIndexOf(" ");
                             if (find == -1)
@@ -143,6 +149,7 @@ namespace Exercises
                                     word.Answers[j] = (string)answers[index++];
                                 }
                             }
+                            word.Addtion = addtion;
                             lesson.exerciseList.Add(word);
                         }
                         catch (Exception exp)
@@ -312,9 +319,10 @@ namespace Exercises
                 {
                     continue;
                 }
-                if (input.IndexOf("wash") != -1)
+                int pfind = input.LastIndexOf("#");
+                if (pfind != -1)
                 {
-                    Console.WriteLine();
+                    input = input.Substring(0, pfind).Trim();
                 }
                 input = input.Replace("\t", " ");
                 int find = input.LastIndexOf(" ");

@@ -13,7 +13,7 @@ namespace Dict
         public string[] Answers = new string[4];
         public int Result = 0;
         public string Translation = "";
-
+        public string Addtion = "";
        
 
     }

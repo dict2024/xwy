@@ -3,12 +3,14 @@ using System.Text;
 using System.Collections;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.Util;
 
 namespace Dict
 {
     [Activity(Label = "俄日英汉", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity
     {
+        TitleButton titleButton;
         int currentMode = 0;
 
         //字典模式
@@ -18,6 +20,7 @@ namespace Dict
 		EditText dictResultText;
 		ListView wordList;
 		Spinner  dictSpinner;
+        ArrayList resultList;
 
         //测试模式
         int currentPlace = 0;
@@ -32,6 +35,7 @@ namespace Dict
         Spinner levelSpinner;
         Spinner lessonSpinner;
         TextView labMessage;
+        TextView txtLevel;
         CheckBox chkTestMode;
         RadioButton[] radSelect = new RadioButton[4];
 		
@@ -47,13 +51,14 @@ namespace Dict
        private void InitializeComponent()
        {
             // 模式选择
-            var tabHost1 = FindViewById<TitleButton>(Resource.Id.tabHost1);
-            if (tabHost1 != null)
+            titleButton = FindViewById<TitleButton>(Resource.Id.tabHost1);
+            if (titleButton != null)
             {
-                tabHost1.Click += TabHost1_Click;
+                titleButton.Click += TabHost1_Click;
             }
 
             // 测试模式
+            txtLevel = FindViewById<TextView>(Resource.Id.current_level);
             chkTestMode = FindViewById<CheckBox>(Resource.Id.test_mode);
 
             labQuestion = FindViewById<TextView>(Resource.Id.question);
@@ -165,11 +170,12 @@ namespace Dict
             var tabHost1 = FindViewById<TitleButton>(Resource.Id.tabHost1);
             this.currentMode = tabHost1.mode;
 
-            var dictLine = FindViewById<LinearLayout>(Resource.Id.input_line2);
+            var dictLine = FindViewById<LinearLayout>(Resource.Id.dict_input);
             var dictList = FindViewById<ListView>(Resource.Id.list);
             var dictScroll = FindViewById<ScrollView>(Resource.Id.result_scroll);
             var execLine = FindViewById<LinearLayout>(Resource.Id.input_line);
             var execLessonLine = FindViewById<LinearLayout>(Resource.Id.lesson_line);
+            var execAnwerLine = FindViewById<LinearLayout>(Resource.Id.answer_line);
             var execQuestion = FindViewById<TextView>(Resource.Id.question);
             var execOptions = FindViewById<RadioGroup>(Resource.Id.user_options);
             var execScroll = FindViewById<ScrollView>(Resource.Id.exec_scroll); 
@@ -184,6 +190,7 @@ namespace Dict
                 execQuestion.Visibility = Android.Views.ViewStates.Gone;
                 execScroll.Visibility = Android.Views.ViewStates.Gone;
                 execOptions.Visibility = Android.Views.ViewStates.Gone;
+                execAnwerLine.Visibility = Android.Views.ViewStates.Gone;
             }
             else
             {
@@ -195,6 +202,7 @@ namespace Dict
                 execQuestion.Visibility = Android.Views.ViewStates.Visible;
                 execScroll.Visibility = Android.Views.ViewStates.Visible;
                 execOptions.Visibility = Android.Views.ViewStates.Visible;
+                execAnwerLine.Visibility = Android.Views.ViewStates.Visible;
             }
         }
 
@@ -214,7 +222,6 @@ namespace Dict
             }
             return (String[])lessonList.ToArray(typeof(string));
         }
-
 
         private int loadMode()
         {
@@ -296,7 +303,6 @@ namespace Dict
             SetCurrentPlaceMessage();
         }
 
-
         public void btnNext_Click(object? sender, EventArgs e)
         {
             if (!this.chkTestMode.Checked)
@@ -316,7 +322,6 @@ namespace Dict
                 })).Start();
             }
         }
-
 
         private bool isEndWith(string text)
         {
@@ -710,9 +715,13 @@ namespace Dict
                 }
                 this.currentPlace = 0;
             }
-            if (this.currentPlace % 20 == 0)
+            if (this.currentPlace % 5 == 0)
+            {
                 if (this.chkTestMode.Checked)
+                {
                     SaveWordLevel();
+                }
+            }                
             try
             {
                 return (Exercise)this.FilterLesson[this.currentPlace];
@@ -766,8 +775,16 @@ namespace Dict
         {
             SetNormalColor();
             if (word != null)
-            {               
-                this.labQuestion.Text = word.Question;
+            {
+                txtLevel.Text = "本词错次数: " + word.Level;
+                if (word.Addtion != "")
+                {
+                    this.labQuestion.Text = word.Question + "      " + word.Addtion;
+                }
+                else
+                {
+                    this.labQuestion.Text = word.Question;
+                }
                 for (int i = 0; i < 4; i++)
                 {
                     radSelect[i].Text = word.Answers[i];
@@ -801,7 +818,7 @@ namespace Dict
             }
         }
 
-	    private void ExerciseWeb_Click(object? sender, EventArgs e)
+        private void ExerciseWeb_Click(object? sender, EventArgs e)
         {
             Exercise currentWord = this.GetCurrentWord();
             if (CurrentLesson.lessonType == 0 && currentWord != null)
@@ -876,9 +893,6 @@ namespace Dict
             currentType = dictName;
         }
 
-
-		
-        ArrayList resultList;
         private void Search_Click(object? sender, EventArgs e)
         {
             string tempStr;

@@ -22,16 +22,16 @@
             this.radSelect2 = new System.Windows.Forms.RadioButton();
             this.radSelect1 = new System.Windows.Forms.RadioButton();
             this.txtDictValue = new System.Windows.Forms.TextBox();
-            this.labSelect = new System.Windows.Forms.Label();
+            this.labQuestion = new System.Windows.Forms.Label();
             this.chkShowChinese = new System.Windows.Forms.CheckBox();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnResult = new System.Windows.Forms.Button();
             this.radSelect4 = new System.Windows.Forms.RadioButton();
             this.btnNext = new System.Windows.Forms.Button();
-            this.labMessage1 = new System.Windows.Forms.Label();
+            this.labMessage = new System.Windows.Forms.Label();
             this.txtLevel = new System.Windows.Forms.TextBox();
-            this.levelBar = new System.Windows.Forms.ComboBox();
-            this.radTest = new System.Windows.Forms.RadioButton();
+            this.levelSpinner = new System.Windows.Forms.ComboBox();
+            this.chkTestMode = new System.Windows.Forms.RadioButton();
             this.radStudy = new System.Windows.Forms.RadioButton();
             this.cmbClassName = new System.Windows.Forms.ComboBox();
             this.btnGoto = new System.Windows.Forms.Button();
@@ -89,16 +89,16 @@
             this.txtDictValue.TabIndex = 11;
             this.txtDictValue.Visible = false;
             // 
-            // labSelect
+            // labQuestion
             // 
-            this.labSelect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.labQuestion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.labSelect.Font = new System.Drawing.Font("Arial", 12F);
-            this.labSelect.Location = new System.Drawing.Point(11, 63);
-            this.labSelect.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.labSelect.Name = "labSelect";
-            this.labSelect.Size = new System.Drawing.Size(706, 77);
-            this.labSelect.TabIndex = 41;
+            this.labQuestion.Font = new System.Drawing.Font("Arial", 12F);
+            this.labQuestion.Location = new System.Drawing.Point(11, 63);
+            this.labQuestion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labQuestion.Name = "labQuestion";
+            this.labQuestion.Size = new System.Drawing.Size(706, 77);
+            this.labQuestion.TabIndex = 41;
             // 
             // chkShowChinese
             // 
@@ -165,13 +165,13 @@
             this.btnNext.Visible = false;
             this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
-            // labMessage1
+            // labMessage
             // 
-            this.labMessage1.Location = new System.Drawing.Point(6, 31);
-            this.labMessage1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.labMessage1.Name = "labMessage1";
-            this.labMessage1.Size = new System.Drawing.Size(289, 22);
-            this.labMessage1.TabIndex = 16;
+            this.labMessage.Location = new System.Drawing.Point(6, 31);
+            this.labMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labMessage.Name = "labMessage";
+            this.labMessage.Size = new System.Drawing.Size(289, 22);
+            this.labMessage.TabIndex = 16;
             // 
             // txtLevel
             // 
@@ -183,32 +183,32 @@
             this.txtLevel.TabIndex = 12;
             this.txtLevel.TextChanged += new System.EventHandler(this.txtLevel_TextChanged);
             // 
-            // levelBar
+            // levelSpinner
             // 
-            this.levelBar.Items.AddRange(new object[] {
+            this.levelSpinner.Items.AddRange(new object[] {
             "0",
             "1",
             "2",
             "3",
             "4",
             "5"});
-            this.levelBar.Location = new System.Drawing.Point(319, 2);
-            this.levelBar.Margin = new System.Windows.Forms.Padding(4);
-            this.levelBar.Name = "levelBar";
-            this.levelBar.Size = new System.Drawing.Size(42, 23);
-            this.levelBar.TabIndex = 11;
-            this.levelBar.SelectedIndexChanged += new System.EventHandler(this.levelBar_SelectedIndexChanged);
+            this.levelSpinner.Location = new System.Drawing.Point(319, 2);
+            this.levelSpinner.Margin = new System.Windows.Forms.Padding(4);
+            this.levelSpinner.Name = "levelSpinner";
+            this.levelSpinner.Size = new System.Drawing.Size(42, 23);
+            this.levelSpinner.TabIndex = 11;
+            this.levelSpinner.SelectedIndexChanged += new System.EventHandler(this.levelBar_SelectedIndexChanged);
             // 
-            // radTest
+            // chkTestMode
             // 
-            this.radTest.Font = new System.Drawing.Font("Tahoma", 8F);
-            this.radTest.Location = new System.Drawing.Point(617, -1);
-            this.radTest.Margin = new System.Windows.Forms.Padding(4);
-            this.radTest.Name = "radTest";
-            this.radTest.Size = new System.Drawing.Size(100, 30);
-            this.radTest.TabIndex = 15;
-            this.radTest.Text = "测验模式";
-            this.radTest.Click += new System.EventHandler(this.radio_Click);
+            this.chkTestMode.Font = new System.Drawing.Font("Tahoma", 8F);
+            this.chkTestMode.Location = new System.Drawing.Point(617, -1);
+            this.chkTestMode.Margin = new System.Windows.Forms.Padding(4);
+            this.chkTestMode.Name = "chkTestMode";
+            this.chkTestMode.Size = new System.Drawing.Size(100, 30);
+            this.chkTestMode.TabIndex = 15;
+            this.chkTestMode.Text = "测验模式";
+            this.chkTestMode.Click += new System.EventHandler(this.radio_Click);
             // 
             // radStudy
             // 
@@ -296,19 +296,19 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(729, 463);
-            this.Controls.Add(this.levelBar);
+            this.Controls.Add(this.levelSpinner);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtDictValue);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.radTest);
+            this.Controls.Add(this.chkTestMode);
             this.Controls.Add(this.btnWeb);
             this.Controls.Add(this.btnGoto);
             this.Controls.Add(this.radStudy);
-            this.Controls.Add(this.labMessage1);
+            this.Controls.Add(this.labMessage);
             this.Controls.Add(this.btnResult);
             this.Controls.Add(this.cmbClassName);
-            this.Controls.Add(this.labSelect);
+            this.Controls.Add(this.labQuestion);
             this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.btnNext);
             this.Controls.Add(this.chkShowChinese);
@@ -331,17 +331,17 @@
         private System.Windows.Forms.RadioButton radSelect2;
         private System.Windows.Forms.RadioButton radSelect1;
         private System.Windows.Forms.TextBox txtDictValue;
-        private System.Windows.Forms.Label labSelect;
+        private System.Windows.Forms.Label labQuestion;
         private System.Windows.Forms.CheckBox chkShowChinese;
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.Button btnResult;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.RadioButton radSelect4;
-        private System.Windows.Forms.Label labMessage1;
+        private System.Windows.Forms.Label labMessage;
         private System.Windows.Forms.TextBox txtLevel;
-        private System.Windows.Forms.ComboBox levelBar;
+        private System.Windows.Forms.ComboBox levelSpinner;
         private System.Windows.Forms.RadioButton radStudy;
-        private System.Windows.Forms.RadioButton radTest;
+        private System.Windows.Forms.RadioButton chkTestMode;
         private System.Windows.Forms.ComboBox cmbClassName;
         private System.Windows.Forms.Button btnGoto;
         private System.Windows.Forms.Panel panel1;

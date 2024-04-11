@@ -13,11 +13,12 @@
     <LinearLayout android:id="@+id/lesson_line" android:orientation="horizontal" 
 		android:layout_width="match_parent" android:layout_height="wrap_content"
 		android:layout_below="@id/tabHost1" android:visibility="gone">
+		<TextView android:id="@+id/lesson_label" android:layout_width="wrap_content"
+			android:layout_height="wrap_content"  android:singleLine="true" 
+			android:layout_marginLeft="6dip"
+			android:text="课程列表"/>
 	    <Spinner android:id="@+id/lesson_spinner" android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"/>
-		<CheckBox android:id="@+id/test_mode" android:text="测验"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_toRightOf="@id/lesson_spinner" />
+		    android:layout_height="wrap_content" android:layout_toRightOf="@id/lesson_label"/>
 	</LinearLayout>
 	
     <LinearLayout android:id="@+id/input_line" android:orientation="horizontal" 
@@ -35,23 +36,17 @@
         <Spinner android:id="@+id/level_spinner" android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:layout_toRightOf="@id/level_label"
             android:layout_alignTop="@id/word_count"/>
-	    <Button android:id="@+id/show_answer" android:layout_width="70dp"
-		    android:layout_height="wrap_content" android:layout_toRightOf="@id/level_spinner"
-		    android:layout_alignTop="@id/word_count" android:text="答案"
-			/>
-	    <Button android:id="@+id/before" android:layout_width="50dp"
-		    android:layout_height="wrap_content" android:layout_toRightOf="@id/show_answer"
-		    android:layout_alignTop="@id/word_count" android:text="前"
-			/>
-        <Button android:id="@+id/next" android:layout_width="50dp"
-            android:layout_height="wrap_content" android:layout_toRightOf="@id/before"
-            android:layout_alignTop="@id/word_count" android:text="后" 
-			/>
-		<Button android:id="@+id/web" android:layout_width="70dp"
-            android:layout_height="wrap_content" android:layout_toRightOf="@id/next"
-            android:layout_alignTop="@id/word_count" android:text="Web" 
-			/>
+		<TextView android:id="@+id/current_level" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_toRightOf="@id/level_spinner"
+			android:layout_alignTop="@id/word_count" android:singleLine="true" 
+			android:layout_marginLeft="5dip" android:layout_marginRight="5dip"
+			android:text=""/>
+		<CheckBox android:id="@+id/test_mode" android:text="测验模式"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/current_level"
+			android:layout_alignTop="@id/word_count"/>	   
     </LinearLayout>
+		
 
 	<TextView android:id="@+id/question" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_below="@id/input_line"
@@ -81,18 +76,40 @@
 			android:layout_below="@id/option_3" android:textSize="20sp" 
 			/>
 	</RadioGroup>
+
+	<LinearLayout android:id="@+id/answer_line" android:orientation="horizontal" 
+		android:layout_width="match_parent" android:layout_height="wrap_content"
+		android:layout_below="@id/user_options" android:layout_marginLeft="2dip"
+		android:visibility="gone">
+		 <Button android:id="@+id/show_answer" android:layout_width="70dp"
+		    android:layout_height="wrap_content" 
+			android:text="答案"
+			/>
+	    <Button android:id="@+id/before" android:layout_width="50dp"
+		    android:layout_height="wrap_content" android:layout_toRightOf="@id/show_answer"
+		    android:layout_alignTop="@id/show_answer" android:text="前"
+			/>
+        <Button android:id="@+id/next" android:layout_width="50dp"
+            android:layout_height="wrap_content" android:layout_toRightOf="@id/before"
+            android:layout_alignTop="@id/show_answer" android:text="后" 
+			/>
+		<Button android:id="@+id/web" android:layout_width="70dp"
+            android:layout_height="wrap_content" android:layout_toRightOf="@id/next"
+            android:layout_alignTop="@id/show_answer" android:text="Web" 
+			/>
+	</LinearLayout>
+
 	<ScrollView android:id="@+id/exec_scroll" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:scrollbars="vertical"
-		android:fadingEdge="vertical" android:layout_below="@id/user_options"
+		android:fadingEdge="vertical" android:layout_below="@id/answer_line"
 		android:visibility="gone">
 
 		<EditText android:id="@+id/exec_text" android:layout_width="fill_parent"
 			android:layout_height="fill_parent" android:textSize="16sp"
 			android:text=""/>
 	</ScrollView>
-
 	
-    <LinearLayout android:id="@+id/input_line2" android:orientation="horizontal" 
+    <LinearLayout android:id="@+id/dict_input" android:orientation="horizontal" 
         android:layout_width="match_parent" android:layout_height="wrap_content"
 		android:layout_below="@id/tabHost1" android:visibility="gone">
         <Spinner android:id="@+id/spinner" android:layout_width="wrap_content"
@@ -116,7 +133,7 @@
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="200dp"
-        android:layout_below="@id/input_line2" 
+        android:layout_below="@id/dict_input" 
 		android:visibility="gone"/>
 
 	<ScrollView android:id="@+id/result_scroll" android:layout_width="fill_parent"

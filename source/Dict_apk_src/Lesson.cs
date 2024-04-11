@@ -106,6 +106,16 @@ namespace Dict
                             {
                                 continue;
                             }
+                            //取出注音作为扩展
+                            string addtion = "";
+                            int pfind = input.LastIndexOf("#");
+                            if (pfind != -1)
+                            {
+                                addtion = input.Substring(pfind + 1, input.Length - pfind - 1);
+                                input = input.Substring(0, pfind).Trim();
+                            }
+
+                            //取出答案
                             input = input.Replace("\t", " ");
                             int find = input.LastIndexOf(" ");
                             if (find == -1)
@@ -134,6 +144,7 @@ namespace Dict
                                     word.Answers[j] = (string)answers[index++];
                                 }
                             }
+                            word.Addtion = addtion;
                             lesson.exerciseList.Add(word);
                         }
                         catch (Exception exp)
@@ -303,9 +314,10 @@ namespace Dict
                 {
                     continue;
                 }
-                if (input.IndexOf("wash") != -1)
+                int pfind = input.LastIndexOf("#");
+                if (pfind != -1)
                 {
-                    Console.WriteLine();
+                    input = input.Substring(0, pfind).Trim();
                 }
                 input = input.Replace("\t", " ");
                 int find = input.LastIndexOf(" ");

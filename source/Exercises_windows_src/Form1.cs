@@ -35,6 +35,56 @@ namespace Exercises
             this.LoadAllLesson();
         }
 
+        private void LoadAllLesson()
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(getExercisePath());
+            if (!dirInfo.Exists)
+            {
+                dirInfo.Create();
+                return;
+            }
+            DirectoryInfo[] dirs = dirInfo.GetDirectories();
+            foreach (DirectoryInfo dir in dirs)
+            {
+                try
+                {
+                    LoadSubLesson(dir.Name);
+                }
+                catch (Exception)
+                {
+                }
+            }
+            //lstClassName.ExpandAll();
+        }
+
+        private void LoadSubLesson(string folderName)
+        {
+            try
+            {
+                DirectoryInfo dirInfo = new DirectoryInfo(getExercisePath() + folderName);
+                FileInfo[] info = dirInfo.GetFiles();
+                foreach (FileInfo file in info)
+                {
+                    try
+                    {
+                        if (file.Extension.ToString().ToLower() == ".txt")
+                        {
+                            ClassNode node = new ClassNode();
+                            node.folder = folderName;
+                            node.fileName = file.Name.Substring(0, file.Name.Length - 4);
+                            cmbClassName.Items.Add(node);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         private string getExercisePath()
         {
             return Application.StartupPath + "\\exercises\\";
@@ -75,7 +125,7 @@ namespace Exercises
 
         private void levelBar_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.Filter(Convert.ToInt32(this.levelBar.SelectedItem.ToString()));
+            this.Filter(Convert.ToInt32(this.levelSpinner.SelectedItem.ToString()));
         }
 
         private void btnPrew_Click(object sender, EventArgs e)
@@ -88,7 +138,7 @@ namespace Exercises
 
         public void btnNext_Click(object sender, EventArgs e)
         {
-            if (this.radStudy.Checked)
+            if (!this.chkTestMode.Checked)
             {
                 timer_Tick(null, null);
             }
@@ -257,7 +307,7 @@ namespace Exercises
                     String keyword = radSelect[i].Text.Trim();
 
                     String str;
-                    if(CurrentLesson.lessonType == 1)
+                    if (CurrentLesson.lessonType == 1)
                     {
                         //查外部字典
                         if (currentClassFolder.StartsWith("jp"))
@@ -269,7 +319,7 @@ namespace Exercises
                         {
                             str = finder.GetDictData(keyword).Replace("\r\n", " ").Replace("】", "】 ");
                         }
-                    } 
+                    }
                     else
                     {
                         //查本地字典
@@ -302,12 +352,11 @@ namespace Exercises
             catch (Exception)
             {
             }
-            
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            if (!this.radStudy.Checked) { 
+            if (this.chkTestMode.Checked) { 
                 this.UpdateWordLevel();
             }
             this.SetWord(this.GetNextWord());
@@ -384,55 +433,7 @@ namespace Exercises
 
 
 
-        private void LoadAllLesson()
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(getExercisePath());
-            if (!dirInfo.Exists)
-            {
-                dirInfo.Create();
-                return;
-            }
-            DirectoryInfo[] dirs = dirInfo.GetDirectories();
-            foreach (DirectoryInfo dir in dirs)
-            {
-                try
-                {
-                    LoadSubLesson(dir.Name);
-                }
-                catch (Exception)
-                {
-                }
-            }
-            //lstClassName.ExpandAll();
-        }
-
-        private void LoadSubLesson(string folderName)
-        {
-            try
-            {
-                DirectoryInfo dirInfo = new DirectoryInfo(getExercisePath() + folderName);
-                FileInfo[] info = dirInfo.GetFiles();
-                foreach (FileInfo file in info)
-                {
-                    try
-                    {
-                        if (file.Extension.ToString().ToLower() == ".txt")
-                        {
-                            ClassNode node = new ClassNode();
-                            node.folder = folderName;
-                            node.fileName = file.Name.Substring(0, file.Name.Length - 4);
-                            cmbClassName.Items.Add(node);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
+   
 
         private void lstClassName_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -494,7 +495,7 @@ namespace Exercises
             {
                 this.FilterLesson.Add(item);
             }
-            this.levelBar.SelectedIndex = 0;
+            this.levelSpinner.SelectedIndex = 0;
             this.CurrentPlace = 0;
             SetCurrentPlaceMessage();
 
@@ -571,17 +572,17 @@ namespace Exercises
             this.CurrentPlace++;
             if (this.CurrentPlace >= this.FilterLesson.Count)
             {
-                if (!this.radStudy.Checked) 
+                if (this.chkTestMode.Checked) 
                 { 
-                    if (this.levelBar.SelectedIndex < this.levelBar.Items.Count - 1) 
+                    if (this.levelSpinner.SelectedIndex < this.levelSpinner.Items.Count - 1) 
                     { 
-                        this.levelBar.SelectedIndex++;
+                        this.levelSpinner.SelectedIndex++;
                     }
                 }
                 this.CurrentPlace = 0;
             }
             if (this.CurrentPlace % 20 == 0)
-                if (!this.radStudy.Checked)
+                if (this.chkTestMode.Checked)
                     SaveWordLevel();
             try
             {
@@ -621,23 +622,28 @@ namespace Exercises
                 className = className.Substring(0, 8) + "..";
             if (FilterLesson.Count > 0)
             {
-                this.labMessage1.Text = className + ": " + (CurrentPlace + 1) + "/" + FilterLesson.Count;
+                this.labMessage.Text = className + ": " + (CurrentPlace + 1) + "/" + FilterLesson.Count;
             }
             else
             {
-                this.labMessage1.Text = className + ": 0/0";
+                this.labMessage.Text = className + ": 0/0";
             }
         }
 
         private void SetWord(Exercise word)
         {
             SetNormalColor();
-            ArrayList list = null;
             if (word != null)
             {
                 this.txtLevel.Text = word.Level.ToString();
-               
-                this.labSelect.Text = word.Question;
+                if (word.Addtion != "")
+                {
+                    this.labQuestion.Text = word.Question + "      " + word.Addtion;
+                }
+                else
+                {
+                    this.labQuestion.Text = word.Question;
+                }
                 for (int i = 0; i < 4; i++)
                 {
                     radSelect[i].Visible = true;
@@ -647,7 +653,7 @@ namespace Exercises
             }
             else
             {
-                this.labSelect.Text = "";
+                this.labQuestion.Text = "";
                 this.txtDictValue.Text = "";
                 for (int i = 0; i < 4; i++)
                 {
@@ -659,7 +665,7 @@ namespace Exercises
         private void UpdateWordLevel()
         {
             Exercise currentWord = this.GetCurrentWord();
-            if ((currentWord != null))
+            if (currentWord != null)
             {
                 int correctID = GetCorrectID();
                 if (correctID != -1)
