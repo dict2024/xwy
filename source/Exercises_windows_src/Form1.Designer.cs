@@ -220,7 +220,7 @@
             this.radStudy.Size = new System.Drawing.Size(99, 30);
             this.radStudy.TabIndex = 13;
             this.radStudy.TabStop = true;
-            this.radStudy.Text = "学习模式";
+            this.radStudy.Text = "浏览模式";
             this.radStudy.Click += new System.EventHandler(this.radio_Click);
             // 
             // cmbClassName

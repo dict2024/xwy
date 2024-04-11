@@ -39,10 +39,11 @@
 		<TextView android:id="@+id/current_level" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_toRightOf="@id/level_spinner"
 			android:layout_alignTop="@id/word_count" android:singleLine="true" 
-			android:layout_marginLeft="5dip" android:layout_marginRight="5dip"
+			android:layout_marginRight="5dip"
 			android:text=""/>
-		<CheckBox android:id="@+id/test_mode" android:text="测验模式"
+		<CheckBox android:id="@+id/test_mode" android:text="浏览模式"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:textSize="12sp"
 			android:layout_toRightOf="@id/current_level"
 			android:layout_alignTop="@id/word_count"/>	   
     </LinearLayout>

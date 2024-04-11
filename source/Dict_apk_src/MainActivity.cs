@@ -60,6 +60,10 @@ namespace Dict
             // 测试模式
             txtLevel = FindViewById<TextView>(Resource.Id.current_level);
             chkTestMode = FindViewById<CheckBox>(Resource.Id.test_mode);
+            if (chkTestMode != null)
+            {
+                chkTestMode.Click += ChkTestMode_Click;
+            }
 
             labQuestion = FindViewById<TextView>(Resource.Id.question);
             if (labQuestion != null)
@@ -162,6 +166,18 @@ namespace Dict
             if (fileDictionary == null)
             {
                 Spinner_ItemSelected(null, null);
+            }
+        }
+
+        private void ChkTestMode_Click(object? sender, EventArgs e)
+        {
+            if (chkTestMode.Checked)
+            {
+                chkTestMode.Text = "测验模式";
+            }
+            else
+            {
+                chkTestMode.Text = "浏览模式";
             }
         }
 
@@ -754,8 +770,7 @@ namespace Dict
         }
 
         private void SetCurrentPlaceMessage()
-        {
-            
+        {            
             if (labMessage == null)
             {
                 return;

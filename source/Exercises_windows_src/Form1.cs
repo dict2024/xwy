@@ -618,8 +618,8 @@ namespace Exercises
         private void SetCurrentPlaceMessage()
         {
             string className = this.currentClassName;
-            if (className.Length > 8)
-                className = className.Substring(0, 8) + "..";
+            if (className.Length > 20)
+                className = className.Substring(0, 20) + "..";
             if (FilterLesson.Count > 0)
             {
                 this.labMessage.Text = className + ": " + (CurrentPlace + 1) + "/" + FilterLesson.Count;
