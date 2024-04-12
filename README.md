@@ -83,7 +83,7 @@ window版本
 
 android版本
 
-![dict2.jpeg](http://g.imgpost.co/2024/04/10/dict2.jpeg)
+![dict3.png](http://g.imgpost.co/2024/04/11/dict3.png)
 
 分为“浏览模式”和“测验模式”：
 
