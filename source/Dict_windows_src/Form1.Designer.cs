@@ -100,6 +100,8 @@
             // 
             // wordInput
             // 
+            this.wordInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.wordInput.Font = new System.Drawing.Font("Arial", 10.8F);
             this.wordInput.FormattingEnabled = true;
             this.wordInput.Location = new System.Drawing.Point(128, 1);
