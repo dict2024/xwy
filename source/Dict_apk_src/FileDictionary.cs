@@ -74,7 +74,7 @@ namespace Dict
         }
 
         private static string replaceReturnChar(string str) =>
-			str.Replace("#", "\r\n").Replace(@"\n", "\r\n");
+			str.Replace(@"\n", "\r\n").Replace("#", "\r\n");
 
 
         public string getData(int resultID)
@@ -123,6 +123,13 @@ namespace Dict
             string[] array = data.Split('\t');
             string input = formatArray(array);
             input = input + "\r\n" + replaceReturnChar(array[3]);
+            if (array.Length > 4)
+            {
+                for (int i = 4; i < array.Length; i++)
+                {
+                    input = input + "\t" + replaceReturnChar(array[i]);
+                }
+            }
             return input;
         }
 
