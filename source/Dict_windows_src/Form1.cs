@@ -192,6 +192,15 @@ namespace Dict
             System.Diagnostics.Process.Start(weburi);
         }
 
+        private void qianyi_Click(object sender, EventArgs e)
+        {
+            saveSetting();
+            string inputText = change(this.wordInput.Text);
+
+            string weburi = getQianyiUri(inputText);
+            System.Diagnostics.Process.Start(weburi);
+        }
+
 
         private void rc_Click(object sender, EventArgs e)
         {
@@ -305,6 +314,11 @@ namespace Dict
             return true;
         }
 
+        string getQianyiUri(string input)
+        {
+            string target = "http://w.qianyix.com/index.php?q=";
+            return target + input;
+        }
         string getWebUri(string input)
         {
             string target = "https://translate.yandex.com/?source_lang=en&target_lang=zh&text=";
@@ -941,6 +955,8 @@ namespace Dict
             else
                 return (input);
         }
+
+
     }
     class DictName
     {
