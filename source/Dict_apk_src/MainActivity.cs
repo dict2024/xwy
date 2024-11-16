@@ -659,7 +659,7 @@ namespace Dict
                 dirInfo.Create();
 
             string fileName = getRecordPath() +
-                currentClassFolder + "\\" + currentClassName + ".level";
+                currentClassFolder + "/" + currentClassName + ".level";
             StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8);
             Exercise word = null;
             for (int i = 0; i < CurrentLesson.exerciseList.Count; i++)
